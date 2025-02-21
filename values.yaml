@@ -1,6 +1,7 @@
 configmaps:
   config-all-v-latest:
     data:
+      ASSETS_WORKER_BATCH_SIZE: '3'
       ASSETS_WORKER_PARALLELIZATION_COUNT: "50"
       BACKGROUND_CHECK_INVITER_TYPE: checkr
       CHANGE_LOG_BATCH_SIZE: "3"

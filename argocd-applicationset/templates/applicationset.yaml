@@ -5,12 +5,14 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: {{ $.Release.Name }}-{{ .name }}
-  namespace: {{ include "applicationset.namespace" (dict "namespace" .namespace "root" $) }}
+  namespace: {{ .applicationNamespace | default $.Values.defaultSettings.applicationNamespace | default "default" }}
   {{- with .labels }}
   labels:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
   generators:
     - git:
         repoURL: {{ include "applicationset.gitRepoURL" (dict "git" .git "root" $) }}

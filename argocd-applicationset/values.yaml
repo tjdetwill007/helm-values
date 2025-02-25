@@ -25,7 +25,7 @@ applicationSets:
       server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"
       namespace: "dev-backend"
   - name: "qa-appset"
-    project: "herwith-qa"
+    project: "herewith-qa"
     applicationNamespace: "herewith-qa-ns"
     destination: 
       server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"

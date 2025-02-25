@@ -47,6 +47,6 @@ applicationSets:
 projects:
   - name: "herewith-staging"
   - name: "herewith-dev"
-  - name: "herwith-qa"
+  - name: "herewith-qa"
   - name: "herewith-pre-prod"
   - name: "herewith-production"

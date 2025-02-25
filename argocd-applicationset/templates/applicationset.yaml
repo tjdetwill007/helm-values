@@ -1,0 +1,41 @@
+{{- if .Values.applicationSets -}}
+{{- range .Values.applicationSets }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: {{ $.Release.Name }}-{{ .name }}
+  namespace: {{ include "applicationset.namespace" (dict "namespace" .namespace "root" $) }}
+  {{- with .labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  generators:
+    - git:
+        repoURL: {{ include "applicationset.gitRepoURL" (dict "git" .git "root" $) }}
+        revision: {{ include "applicationset.gitRevision" (dict "git" .git "root" $) }}
+        directories:
+        - path: argocd-applicationset-values/{{ .project }}/*
+  template:
+    metadata:
+      name: '{{`{{.path.basename}}`}}'
+      namespace: {{ .applicationNamespace | default $.Values.defaultSettings.applicationNamespace | default "default" }}
+    spec:
+      project: {{ .project | default $.Values.defaultSettings.project | default "default" }}
+      sources:
+        - repoURL: git@github.com:/quoori/helm-charts
+          targetRevision: v1.0.4
+          path: charts/superchart
+          helm:
+            valueFiles:
+            - $values/values.yaml
+        - repoURL: https://github.com/tjdetwill007/helm-values.git
+          targetRevision: master
+          path: '{{`{{.path.path}}`}}'
+          ref: values
+      destination:
+        server: {{ include "applicationset.destinationServer" (dict "destination" .destination "root" $) }}
+        namespace: {{ .destination.namespace }}
+{{- end }}
+{{- end }}

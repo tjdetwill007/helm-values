@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: herewith-qa-applicationset
+  namespace: argo-cd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/your-org/your-repo.git
+        revision: main
+        files:
+          - apps-config.yaml
+  template:
+    metadata:
+      name: '{{name}}'
+      namespace: app-management  # This is where the ArgoCD Applications will be created
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/your-org/your-repo.git
+        targetRevision: main
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+

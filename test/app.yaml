@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: test
+  namespace: argo-cd
+spec:
+  destination:
+    namespace: dev-backend
+    server: >-
+      https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com
+  sources:
+    - repoURL: git@github.com:/quoori/helm-charts
+      targetRevision: v1.0.4
+      path: charts/superchart
+      helm:
+        valueFiles:
+        - $values/values.yaml
+    - repoURL: https://github.com/tjdetwill007/helm-values.git
+      targetRevision: master
+      ref: values
+  project: default

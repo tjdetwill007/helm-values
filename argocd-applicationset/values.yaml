@@ -1,0 +1,52 @@
+defaultNamespace: "argo-cd"
+
+defaultGit:
+  repoURL: "https://github.com/tjdetwill007/helm-values.git"
+  revision: "master"
+  configFile: "apps-config.yaml"
+
+defaultSettings:
+  applicationNamespace: "default-apps"
+  project: "default"
+  destination:
+    server: "https://kubernetes.default.svc"
+
+applicationSets:
+  - name: "staging-appset"
+    project: "herewith-staging"
+    applicationNamespace: "herewith-staging-ns"
+    destination: 
+      server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"
+      namespace: "backend"
+  - name: "dev-appset"
+    project: "herewith-dev"
+    applicationNamespace: "herewith-dev-ns"
+    destination: 
+      server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"
+      namespace: "dev-backend"
+  - name: "qa-appset"
+    project: "herwith-qa"
+    applicationNamespace: "herewith-qa-ns"
+    destination: 
+      server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"
+      namespace: "qa-backend"
+  - name: "pre-prod-appset"
+    project: "herewith-pre-prod"
+    applicationNamespace: "herewith-pre-prod-ns"
+    destination: 
+      server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"
+      namespace: "pre-prod-backend"
+  - name: "production-appset"
+    project: "herewith-production"
+    applicationNamespace: "herewith-production-ns"
+    destination: 
+      server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"
+      namespace: "prod-backend"
+
+# Here we are referencing projects as envrionments and the same are referenced to the applicationset.
+projects:
+  - name: "herewith-staging"
+  - name: "herewith-dev"
+  - name: "herwith-qa"
+  - name: "herewith-pre-prod"
+  - name: "herewith-production"

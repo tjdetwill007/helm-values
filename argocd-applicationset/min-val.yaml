@@ -1,0 +1,6 @@
+applicationSets:
+  - name: "team1"
+  - name: "team2"
+  - name: "staging"
+  - name: "production"
+  - name: "shared-services"

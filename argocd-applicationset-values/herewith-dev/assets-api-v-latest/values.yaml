@@ -209,8 +209,7 @@ externalSecrets:
     target:
       template:
         data:
-          BACKEND_POSTGRES_URL: postgresql://{{ .username }}:{{ .password }}@{{ .host
-            }}:{{ .port }}/dev_backend
+          BACKEND_POSTGRES_URL: postgresql://{{ .username }}:{{ .password }}@{{ .host }}:{{ .port }}/dev_backend
 ingress:
   api:
     annotations:

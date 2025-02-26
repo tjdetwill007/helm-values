@@ -1,0 +1,687 @@
+---
+# Source: superchart/templates/pod-disruption-budget.yaml
+apiVersion: "policy/v1"
+kind: PodDisruptionBudget
+metadata:
+  name: internal-api-v-latest
+  labels:
+    app.kubernetes.io/name: "superchart"
+    helm.sh/chart: "superchart-1.0.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "internal-api-v-latest"
+    
+spec:
+  minAvailable: 60%
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "superchart"
+      helm.sh/chart: "superchart-1.0.0"
+      app.kubernetes.io/managed-by: "Helm"
+      app.kubernetes.io/instance: "internal-api-v-latest"
+---
+# Source: superchart/templates/service-account.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: internal-api-v-latest
+  labels:
+    app.kubernetes.io/name: "superchart"
+    helm.sh/chart: "superchart-1.0.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "internal-api-v-latest"
+    
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::184419373168:role/eks-quoori-backend-internal-api
+automountServiceAccountToken: true
+---
+# Source: superchart/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: internal-api-v-latest
+  labels:
+    app.kubernetes.io/name: "superchart"
+    helm.sh/chart: "superchart-1.0.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "internal-api-v-latest"
+    
+spec:
+  type: "ClusterIP"
+  
+  
+  ports:
+    - name: "http-default"
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - name: "http-metrics"
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
+  selector:
+    app.kubernetes.io/name: "superchart"
+    helm.sh/chart: "superchart-1.0.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "internal-api-v-latest"
+---
+# Source: superchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: internal-api-v-latest
+  labels:
+    app.kubernetes.io/name: "superchart"
+    helm.sh/chart: "superchart-1.0.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "internal-api-v-latest"
+    
+  annotations:
+    reloader.stakater.com/auto: "true"
+    
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+        maxSurge: "25%"
+        maxUnavailable: "25%"
+  minReadySeconds: 5
+  paused: false
+  progressDeadlineSeconds: 600
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "superchart"
+      helm.sh/chart: "superchart-1.0.0"
+      app.kubernetes.io/managed-by: "Helm"
+      app.kubernetes.io/instance: "internal-api-v-latest"
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: "superchart"
+        helm.sh/chart: "superchart-1.0.0"
+        app.kubernetes.io/managed-by: "Helm"
+        app.kubernetes.io/instance: "internal-api-v-latest"
+        
+      annotations:
+        prometheus.io/port: "9090"
+        prometheus.io/scrape: "true"
+        checksum/secret: 75a11da44c802486bc6f65640aa48a730f0f684c5c07a42ba3cd1735eb3fb070
+        checksum/secret-files: 75a11da44c802486bc6f65640aa48a730f0f684c5c07a42ba3cd1735eb3fb070
+        checksum/config: 75a11da44c802486bc6f65640aa48a730f0f684c5c07a42ba3cd1735eb3fb070
+        checksum/ips: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+    spec:
+      serviceAccountName: "internal-api-v-latest"
+      terminationGracePeriodSeconds: 30
+      restartPolicy: 
+        Always
+      containers:
+        
+        - name: "app"
+          image: "184419373168.dkr.ecr.eu-central-1.amazonaws.com/quoori-backend-internal-api:600887f"
+          imagePullPolicy: Always
+          args:
+            - internal-api
+          envFrom:
+            - configMapRef:
+                name: config-all-v-latest
+            - secretRef:
+                name: internal-api-v-latest-algolia-credentials
+            - secretRef:
+                name: internal-api-v-latest-credentials
+            - secretRef:
+                name: internal-api-v-latest-postgres-backend-credentials
+            - secretRef:
+                name: internal-api-v-latest-postgres-changelog-credentials
+          ports:
+            
+            
+            - name: "http-default"
+              protocol: TCP
+              containerPort: 8080
+            - name: "http-metrics"
+              protocol: TCP
+              containerPort: 9090
+          livenessProbe:
+            httpGet:
+              path: /_livez
+              port: 9090
+          readinessProbe:
+            httpGet:
+              path: /_livez
+              port: 9090
+          resources:
+            limits:
+              cpu: 400m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                        - internal-api-v-latest
+---
+# Source: superchart/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: internal-api-v-latest
+  labels:
+    app.kubernetes.io/name: "superchart"
+    helm.sh/chart: "superchart-1.0.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "internal-api-v-latest"
+    
+  annotations:
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:184419373168:certificate/43c486b6-b87a-4aa0-9b01-267d1fc86541
+    alb.ingress.kubernetes.io/group.name: public
+    alb.ingress.kubernetes.io/healthcheck-path: /_livez
+    alb.ingress.kubernetes.io/ip-address-type: ipv4
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "internal-api.quoori.eu"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: internal-api-v-latest
+                port:
+                  number: 8080
+---
+# Source: superchart/templates/external-secrets.yaml
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: internal-api-v-latest-algolia-credentials
+  labels:
+    app.kubernetes.io/name: "superchart"
+    helm.sh/chart: "superchart-1.0.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "internal-api-v-latest"
+    
+spec:
+  refreshInterval: "5m"
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: cluster-external-secrets
+  target:
+    name: internal-api-v-latest-algolia-credentials
+  data:
+    - secretKey: 0
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-algolia-credentials
+        property: application_id
+      secretKey: ALGOLIA_APPLICATION_ID
+    - secretKey: 1
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-algolia-credentials
+        property: write_key
+      secretKey: ALGOLIA_WRITE_KEY
+    - secretKey: 2
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-algolia-credentials
+        property: search_key
+      secretKey: ALGOLIA_SEARCH_KEY
+    - secretKey: 3
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-algolia-credentials
+        property: api_endpoints
+      secretKey: ALGOLIA_API_ENDPOINTS
+---
+# Source: superchart/templates/external-secrets.yaml
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: internal-api-v-latest-credentials
+  labels:
+    app.kubernetes.io/name: "superchart"
+    helm.sh/chart: "superchart-1.0.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "internal-api-v-latest"
+    
+spec:
+  refreshInterval: "5m"
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: cluster-external-secrets
+  target:
+    name: internal-api-v-latest-credentials
+  data:
+    - secretKey: 0
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-firebase-family-credentials
+      secretKey: FIREBASE_CREDENTIALS
+    - secretKey: 1
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-twilio-credentials
+        property: account_sid
+      secretKey: TWILIO_USERNAME
+    - secretKey: 2
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-twilio-credentials
+        property: auth_token
+      secretKey: TWILIO_PASSWORD
+    - secretKey: 3
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-twilio-credentials
+        property: sms_sender_number
+      secretKey: TWILIO_SENDER_NUMBER
+    - secretKey: 4
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-twilio-credentials
+        property: sms_sender_name
+      secretKey: TWILIO_SENDER_NAME
+    - secretKey: 5
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-getstream-credentials
+        property: key
+      secretKey: GET_STREAM_KEY
+    - secretKey: 6
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-getstream-credentials
+        property: secret
+      secretKey: GET_STREAM_SECRET
+    - secretKey: 7
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-branch-credentials
+        property: key
+      secretKey: BRANCH_KEY
+    - secretKey: 8
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-branch-caregiver-credentials
+        property: key
+      secretKey: BRANCH_CAREGIVER_KEY
+    - secretKey: 9
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-checker-credentials
+        property: key
+      secretKey: CHECKR_KEY
+    - secretKey: 10
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-checker-credentials
+        property: url
+      secretKey: CHECKR_URL
+    - secretKey: 11
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: jobs_sns_topic_arn
+      secretKey: JOBS_SNS_TOPIC_ARN
+    - secretKey: 12
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: jobs_sqs_queue_url
+      secretKey: JOBS_SQS_QUEUE_URL
+    - secretKey: 13
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: change_log_sns_topic_arn
+      secretKey: CHANGE_LOG_SNS_TOPIC_ARN
+    - secretKey: 14
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: change_log_sqs_queue_url
+      secretKey: CHANGE_LOG_SQS_QUEUE_URL
+    - secretKey: 15
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: user_documents_s3_bucket
+      secretKey: USER_DOCUMENTS_BUCKET_NAME
+    - secretKey: 16
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: legal_s3_bucket
+      secretKey: LEGAL_DOCUMENTS_BUCKET_NAME
+    - secretKey: 17
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: video_profile_s3_bucket
+      secretKey: VIDEO_PROFILES_BUCKET_NAME
+    - secretKey: 18
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: public_api_endpoint
+      secretKey: PUBLIC_API_ENDPOINT
+    - secretKey: 19
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: internal_api_allowed_origins
+      secretKey: INTERNAL_API_ALLOWED_ORIGINS
+    - secretKey: 20
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: internal_api_allowed_token_domains
+      secretKey: INTERNAL_API_ALLOWED_TOKEN_DOMAINS
+    - secretKey: 21
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: internal_api_allowed_audiences
+      secretKey: INTERNAL_API_ALLOWED_AUDIENCES
+    - secretKey: 22
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-gmaps-credentials
+        property: api_key
+      secretKey: GOOGLE_MAPS_KEY
+    - secretKey: 23
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hasura-credentials
+        property: admin_key
+      secretKey: HASURA_GRAPHQL_ADMIN_SECRET
+    - secretKey: 24
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hasura-credentials
+        property: api_host
+      secretKey: HASURA_GRAPHQL_ENDPOINT
+    - secretKey: 25
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hws-adapter-config
+        property: homework_api_endpoint
+      secretKey: HOMEWORK_API_ENDPOINT
+    - secretKey: 26
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hws-adapter-config
+        property: homework_api_token
+      secretKey: HOMEWORK_API_TOKEN
+    - secretKey: 27
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hws-adapter-config
+        property: homework_client_type
+      secretKey: HOMEWORK_CLIENT_TYPE
+    - secretKey: 28
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-insurance-gig-credentials
+        property: login_url
+      secretKey: INSURANCE_GIG_LOGIN_URL
+    - secretKey: 29
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-insurance-gig-credentials
+        property: api_url
+      secretKey: INSURANCE_GIG_API_URL
+    - secretKey: 30
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-insurance-gig-credentials
+        property: username
+      secretKey: INSURANCE_GIG_USERNAME
+    - secretKey: 31
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-insurance-gig-credentials
+        property: password
+      secretKey: INSURANCE_GIG_PASSWORD
+    - secretKey: 32
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-insurance-gig-credentials
+        property: referral_email
+      secretKey: INSURANCE_REFERRAL_EMAIL
+    - secretKey: 33
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hubspot-credentials
+        property: api_url
+      secretKey: HUBSPOT_API_URL
+    - secretKey: 34
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hubspot-credentials
+        property: private_api_token
+      secretKey: HUBSPOT_PRIVATE_API_TOKEN
+    - secretKey: 35
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-utils
+        property: backoffice_url
+      secretKey: BACKOFFICE_URL
+    - secretKey: 36
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-utils
+        property: support_email
+      secretKey: SUPPORT_EMAIL
+    - secretKey: 37
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-utils
+        property: service_agent_email
+      secretKey: SERVICE_AGENT_EMAIL
+    - secretKey: 38
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-stripe-credentials
+        property: api_key
+      secretKey: STRIPE_API_KEY
+    - secretKey: 39
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-stripe-credentials
+        property: publishable_key
+      secretKey: STRIPE_PUBLISHABLE_KEY
+    - secretKey: 40
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-stripe-credentials
+        property: webhook_secret
+      secretKey: STRIPE_WEBHOOK_SECRET
+    - secretKey: 41
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-greenhouse-credentials
+        property: harvest_key
+      secretKey: GREEN_HOUSE_KEY
+---
+# Source: superchart/templates/external-secrets.yaml
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: internal-api-v-latest-postgres-backend-credentials
+  labels:
+    app.kubernetes.io/name: "superchart"
+    helm.sh/chart: "superchart-1.0.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "internal-api-v-latest"
+    
+spec:
+  refreshInterval: "5m"
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: cluster-external-secrets
+  target:
+    name: internal-api-v-latest-postgres-backend-credentials
+    template:
+      engineVersion: v2
+      data:
+        BACKEND_POSTGRES_URL: postgresql://{{ .username }}:{{ .password }}@{{ .host }}:{{
+          .port }}/{{ .dbname }}
+  data:
+    - secretKey: 0
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: host
+      secretKey: host
+    - secretKey: 1
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: port
+      secretKey: port
+    - secretKey: 2
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: username
+      secretKey: username
+    - secretKey: 3
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: password
+      secretKey: password
+    - secretKey: 4
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: dbname
+      secretKey: dbname
+---
+# Source: superchart/templates/external-secrets.yaml
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: internal-api-v-latest-postgres-changelog-credentials
+  labels:
+    app.kubernetes.io/name: "superchart"
+    helm.sh/chart: "superchart-1.0.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "internal-api-v-latest"
+    
+spec:
+  refreshInterval: "5m"
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: cluster-external-secrets
+  target:
+    name: internal-api-v-latest-postgres-changelog-credentials
+    template:
+      engineVersion: v2
+      data:
+        CHANGE_LOG_POSTGRES_URL: postgresql://{{ .username }}:{{ .password }}@{{ .host }}:{{
+          .port }}/{{ .dbname }}
+  data:
+    - secretKey: 0
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: host
+      secretKey: host
+    - secretKey: 1
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: port
+      secretKey: port
+    - secretKey: 2
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: username
+      secretKey: username
+    - secretKey: 3
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: password
+      secretKey: password
+    - secretKey: 4
+      remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: dbname
+      secretKey: dbname
+

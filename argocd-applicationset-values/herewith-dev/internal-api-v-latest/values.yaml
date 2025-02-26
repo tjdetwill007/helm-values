@@ -381,6 +381,7 @@ externalSecrets:
 ingress:
   api:
     annotations:
+      alb.ingress.kubernetes.io/load-balancer-name: "staging-test-alb"
       alb.ingress.kubernetes.io/backend-protocol: HTTP
       alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:184419373168:certificate/43c486b6-b87a-4aa0-9b01-267d1fc86541
       alb.ingress.kubernetes.io/group.name: public

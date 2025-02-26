@@ -1,0 +1,62 @@
+deployment:
+  enabled: true
+  replicas:
+    default: 1
+ingress:
+  api:
+    annotations:
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:184419373168:certificate/43c486b6-b87a-4aa0-9b01-267d1fc86541
+      alb.ingress.kubernetes.io/group.name: public
+      alb.ingress.kubernetes.io/healthcheck-path: /_livez
+      alb.ingress.kubernetes.io/ip-address-type: ipv4
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/ssl-redirect: "443"
+      alb.ingress.kubernetes.io/target-type: ip
+    defaultBackend:
+      enabled: false
+    enabled: true
+    hostname: dev-api.herewith.eu
+    ingressClassName: alb
+    paths:
+      docs:
+        backend:
+          serviceName: default
+          servicePort: 8080
+        path: /_docs
+        pathType: Prefix
+labels:
+  quoori.com/environment: staging
+  quoori.com/team: backend
+monitoring:
+  prometheus:
+    serviceMonitor:
+      enabled: false
+pod:
+  container:
+    env:
+      BASE_URL: /_docs
+      PORT: 8080
+      QUERY_CONFIG_ENABLED: true
+      URLS: '[{url: "/assets/openapi.json", name: "Assets API"},{url: "https://hws-api.herewith.eu/api/openapi.json",
+        name: "HWS API"},{url: "https://internal-api.herewith.eu/api/openapi.json",
+        name: "Internal API"},{url: "https://dev-api.herewith.eu/v5/openapi.json",
+        name: "Public API v5"}, {url: "https://dev-api.herewith.eu/v6/openapi.json",
+        name: "Public API v6"}, {url: "https://dev-api.herewith.eu/v6/openapi.json",
+        name: "Public API v-latest"}, {url: "/webhooks/openapi.json", name: "Webhooks
+        API"}]'
+    image:
+      registry: docker.io
+      repository: swaggerapi/swagger-ui
+      tag: v5.9.3
+    livenessProbe: null
+    readinessProbe: null
+    resources:
+      limits:
+        cpu: 100m
+        memory: 200Mi
+      requests:
+        cpu: 50m
+        memory: 100Mi
+serviceAccount:
+  imagePullSecrets: {}

@@ -384,7 +384,7 @@ ingress:
       alb.ingress.kubernetes.io/target-type: ip
     defaultBackend:
       enabled: false
-    enabled: false
+    enabled: true
     hostname: internal-api.quoori.eu
     ingressClassName: nginx
     paths:

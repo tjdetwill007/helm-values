@@ -1,0 +1,25 @@
+controller:
+  config:
+    enable-underscores-in-headers: "true"
+  kind: DaemonSet
+  labels:
+    ingress: nginx
+  service:
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: controller=nginx
+      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:eu-central-1:184419373168:certificate/a53296b3-14ee-4356-a2a3-265ee299f845
+      service.beta.kubernetes.io/aws-load-balancer-type: nlb
+      service.beta.kubernetes.io/aws-load-balancer-name: "staging-dumy-nlb"
+    enableHttp: true
+    enableHttps: true
+    externalTrafficPolicy: Local
+    ports:
+      http: 80
+      https: 443  
+    targetPorts:
+      http: http
+      https: 80
+  updateStrategy:
+    type: RollingUpdate

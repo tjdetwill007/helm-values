@@ -31,7 +31,7 @@ spec:
           path: charts/superchart
           helm:
             valueFiles:
-            - $values/values.yaml
+            - $values/{{`{{.path.path}}`}}/values.yaml
         - repoURL: https://github.com/tjdetwill007/helm-values.git
           targetRevision: master
           path: '{{`{{.path.path}}`}}'

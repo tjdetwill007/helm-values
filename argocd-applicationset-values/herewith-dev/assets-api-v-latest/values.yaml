@@ -154,18 +154,6 @@ externalSecrets:
         key: backend-gmaps-credentials
         property: api_key
       secretKey: GOOGLE_MAPS_KEY
-    - remoteRef:
-        conversionStrategy: Default
-        decodingStrategy: None
-        key: backend-getstream-credentials
-        property: key
-      secretKey: GET_STREAM_KEY
-    - remoteRef:
-        conversionStrategy: Default
-        decodingStrategy: None
-        key: backend-getstream-credentials
-        property: secret
-      secretKey: GET_STREAM_SECRET
     enabled: true
     secretStoreRef:
       kind: ClusterSecretStore

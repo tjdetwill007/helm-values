@@ -393,7 +393,7 @@ ingress:
       enabled: false
     enabled: true
     hostname: internal-api.herewith.eu
-    ingressClassName: nginx
+    ingressClassName: alb
     paths:
       api:
         backend:

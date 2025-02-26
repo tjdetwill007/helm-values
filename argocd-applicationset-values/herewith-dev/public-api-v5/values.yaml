@@ -15,7 +15,7 @@ ingress:
       enabled: false
     enabled: true
     hostname: dev-api.herewith.eu
-    ingressClassName: nginx
+    ingressClassName: alb
     paths:
       api:
         backend:

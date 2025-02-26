@@ -1,7 +1,7 @@
 deployment:
   enabled: true
   replicas:
-    default: 2
+    default: 1
 externalSecrets:
   algolia-credentials:
     data:
@@ -79,13 +79,13 @@ externalSecrets:
     - remoteRef:
         conversionStrategy: Default
         decodingStrategy: None
-        key: backend-branch-credentials
+        key: backend-dev-branch-credentials
         property: key
       secretKey: BRANCH_KEY
     - remoteRef:
         conversionStrategy: Default
         decodingStrategy: None
-        key: backend-branch-caregiver-credentials
+        key: backend-dev-branch-caregiver-credentials
         property: key
       secretKey: BRANCH_CAREGIVER_KEY
     - remoteRef:
@@ -103,25 +103,25 @@ externalSecrets:
     - remoteRef:
         conversionStrategy: Default
         decodingStrategy: None
-        key: backend-config
+        key: backend-dev-config
         property: jobs_sns_topic_arn
       secretKey: JOBS_SNS_TOPIC_ARN
     - remoteRef:
         conversionStrategy: Default
         decodingStrategy: None
-        key: backend-config
+        key: backend-dev-config
         property: jobs_sqs_queue_url
       secretKey: JOBS_SQS_QUEUE_URL
     - remoteRef:
         conversionStrategy: Default
         decodingStrategy: None
-        key: backend-config
+        key: backend-dev-config
         property: change_log_sns_topic_arn
       secretKey: CHANGE_LOG_SNS_TOPIC_ARN
     - remoteRef:
         conversionStrategy: Default
         decodingStrategy: None
-        key: backend-config
+        key: backend-dev-config
         property: change_log_sqs_queue_url
       secretKey: CHANGE_LOG_SQS_QUEUE_URL
     - remoteRef:
@@ -145,7 +145,7 @@ externalSecrets:
     - remoteRef:
         conversionStrategy: Default
         decodingStrategy: None
-        key: backend-config
+        key: backend-dev-config
         property: public_api_endpoint
       secretKey: PUBLIC_API_ENDPOINT
     - remoteRef:
@@ -248,7 +248,7 @@ externalSecrets:
         conversionStrategy: Default
         decodingStrategy: None
         key: backend-utils
-        property: backoffice_url
+        property: devbackoffice_url
       secretKey: BACKOFFICE_URL
     - remoteRef:
         conversionStrategy: Default
@@ -265,19 +265,19 @@ externalSecrets:
     - remoteRef:
         conversionStrategy: Default
         decodingStrategy: None
-        key: backend-stripe-credentials
+        key: backend-dev-stripe-credentials
         property: api_key
       secretKey: STRIPE_API_KEY
     - remoteRef:
         conversionStrategy: Default
         decodingStrategy: None
-        key: backend-stripe-credentials
+        key: backend-dev-stripe-credentials
         property: publishable_key
       secretKey: STRIPE_PUBLISHABLE_KEY
     - remoteRef:
         conversionStrategy: Default
         decodingStrategy: None
-        key: backend-stripe-credentials
+        key: backend-dev-stripe-credentials
         property: webhook_secret
       secretKey: STRIPE_WEBHOOK_SECRET
     - remoteRef:
@@ -286,6 +286,12 @@ externalSecrets:
         key: backend-greenhouse-credentials
         property: harvest_key
       secretKey: GREEN_HOUSE_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-service-fee
+        property: service_fee
+      secretKey: SERVICE_FEE
     enabled: true
     secretStoreRef:
       kind: ClusterSecretStore
@@ -329,7 +335,8 @@ externalSecrets:
     target:
       template:
         data:
-          BACKEND_POSTGRES_URL: postgresql://{{ .username }}:{{ .password }}@{{ .host }}:{{ .port }}/{{ .dbname }}
+          BACKEND_POSTGRES_URL: postgresql://{{ .username }}:{{ .password }}@{{ .host
+            }}:{{ .port }}/dev_backend
   postgres-changelog-credentials:
     data:
     - remoteRef:
@@ -370,7 +377,7 @@ externalSecrets:
       template:
         data:
           CHANGE_LOG_POSTGRES_URL: postgresql://{{ .username }}:{{ .password }}@{{
-            .host }}:{{ .port }}/{{ .dbname }}
+            .host }}:{{ .port }}/dev_changelog
 ingress:
   api:
     annotations:
@@ -385,7 +392,7 @@ ingress:
     defaultBackend:
       enabled: false
     enabled: true
-    hostname: internal-api.quoori.eu
+    hostname: internal-api.herewith.eu
     ingressClassName: nginx
     paths:
       api:
@@ -427,7 +434,7 @@ pod:
     image:
       registry: 184419373168.dkr.ecr.eu-central-1.amazonaws.com
       repository: quoori-backend-internal-api
-      tag: 600887f
+      tag: a2e0479
     livenessProbe:
       httpGet:
         path: /_livez

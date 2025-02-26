@@ -1,0 +1,96 @@
+deployment:
+  enabled: true
+  replicas:
+    default: 1
+ingress:
+  api:
+    annotations:
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/group.name: public
+      alb.ingress.kubernetes.io/healthcheck-path: /_livez
+      alb.ingress.kubernetes.io/ip-address-type: ipv4
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/ssl-redirect: "443"
+      alb.ingress.kubernetes.io/target-type: ip
+    defaultBackend:
+      enabled: false
+    enabled: false
+    ingressClassName: alb
+    paths:
+      apiv2:
+        backend:
+          serviceName: default
+          servicePort: 80
+        path: /v2
+        pathType: Prefix
+      apiv3:
+        backend:
+          serviceName: default
+          servicePort: 80
+        path: /v3
+        pathType: Prefix
+      apiv4:
+        backend:
+          serviceName: default
+          servicePort: 80
+        path: /v4
+        pathType: Prefix
+      apiv5:
+        backend:
+          serviceName: default
+          servicePort: 80
+        path: /v5
+        pathType: Prefix
+labels:
+  quoori.com/environment: staging
+  quoori.com/team: backend
+monitoring:
+  prometheus:
+    serviceMonitor:
+      enabled: false
+pod:
+  container:
+    files:
+    - data: |
+        server {
+            listen       80;
+            listen  [::]:80;
+            server_name  localhost;
+
+            #access_log  /var/log/nginx/host.access.log  main;
+
+            location / {
+               add_header Content-Type "application/json" always;
+               return 410 '{"code":12601,"message":"An update to the latest version of the Herewith app is required"}';
+            }
+
+            location /_health {
+               return 200;
+            }
+        }
+      mountPath: /etc/nginx/conf.d/default.conf
+      name: default.conf
+    image:
+      registry: docker.io
+      repository: nginx
+      tag: latest
+    livenessProbe:
+      httpGet:
+        path: /_health
+        port: 80
+      initialDelaySeconds: 10
+      periodSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /_health
+        port: 80
+      initialDelaySeconds: 10
+      periodSeconds: 10
+serviceAccount:
+  imagePullSecrets: {}
+services:
+  default:
+    ports:
+      default:
+        port: 80
+        targetPort: 80

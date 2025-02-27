@@ -1,0 +1,40 @@
+name: Update Image Tag and Create PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      new_tag:
+        description: "New image tag"
+        required: true
+
+jobs:
+  update-image-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install yq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+          wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
+
+      - name: Checkout ArgoCD Values Repository using SSH
+        uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          repository: your-org/your-argocd-values-repo
+          ref: main  # Ensure we are on the main branch
+
+      - name: Update Image Tag in values.yaml with yq
+        run: |
+          yq eval -i '.image.tag = "${{ github.event.inputs.new_tag }}"' path/to/values.yaml
+          git diff
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: update-image-${{ github.event.inputs.new_tag }}
+          title: "Update Image Tag to ${{ github.event.inputs.new_tag }}"
+          body: "Automated PR to update the image tag in values.yaml"
+          labels: "automated-pr"
+          delete-branch: true

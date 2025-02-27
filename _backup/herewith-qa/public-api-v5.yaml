@@ -1,0 +1,34 @@
+deployment:
+  enabled: false
+ingress:
+  api:
+    annotations:
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:184419373168:certificate/43c486b6-b87a-4aa0-9b01-267d1fc86541
+      alb.ingress.kubernetes.io/group.name: public
+      alb.ingress.kubernetes.io/healthcheck-path: /_livez
+      alb.ingress.kubernetes.io/ip-address-type: ipv4
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/ssl-redirect: "443"
+      alb.ingress.kubernetes.io/target-type: ip
+    defaultBackend:
+      enabled: false
+    enabled: true
+    hostname: qa-api.herewith.eu
+    ingressClassName: nginx
+    paths:
+      api:
+        backend:
+          serviceName: nginx
+          servicePort: 80
+        path: /v5
+        pathType: Prefix
+monitoring:
+  prometheus:
+    serviceMonitor:
+      enabled: false
+serviceAccount:
+  enabled: false
+services:
+  default:
+    enabled: false

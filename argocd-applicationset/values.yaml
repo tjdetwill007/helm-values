@@ -11,6 +11,7 @@ defaultSettings:
   destination:
     server: "https://kubernetes.default.svc"
 
+# Here each applicationset is environment based deployment manager i.e, they will deploy every microservices of their respective environment like, public api, assets api, internal api etc. 
 applicationSets:
   - name: "staging-appset"
     project: "herewith-staging"

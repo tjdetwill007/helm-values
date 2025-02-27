@@ -1,0 +1,28 @@
+deployment:
+  enabled: true
+  replicas:
+    default: 1
+labels:
+  quoori.com/environment: staging
+  quoori.com/team: backend
+monitoring:
+  prometheus:
+    serviceMonitor:
+      enabled: false
+pod:
+  container:
+    args:
+    - --proxy-all=https://sandbox.homeworksolutions.com
+    - --record-mappings
+    - --disable-banner
+    - --port=8080
+    - --verbose
+    - --local-response-templating
+    image:
+      registry: 184419373168.dkr.ecr.eu-central-1.amazonaws.com
+      repository: quoori-backend-hws-api-mock
+      tag: a2e0479
+    livenessProbe: null
+    readinessProbe: null
+serviceAccount:
+  imagePullSecrets: {}

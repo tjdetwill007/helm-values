@@ -1,0 +1,278 @@
+deployment:
+  enabled: true
+  replicas:
+    default: 1
+externalSecrets:
+  credentials:
+    data:
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-firebase-family-credentials
+      secretKey: FIREBASE_CREDENTIALS
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-twilio-credentials
+        property: account_sid
+      secretKey: TWILIO_USERNAME
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-twilio-credentials
+        property: auth_token
+      secretKey: TWILIO_PASSWORD
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-twilio-credentials
+        property: sms_sender_number
+      secretKey: TWILIO_SENDER_NUMBER
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-twilio-credentials
+        property: sms_sender_name
+      secretKey: TWILIO_SENDER_NAME
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-getstream-credentials
+        property: key
+      secretKey: GET_STREAM_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-getstream-credentials
+        property: secret
+      secretKey: GET_STREAM_SECRET
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-pre-branch-credentials
+        property: key
+      secretKey: BRANCH_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-pre-branch-caregiver-credentials
+        property: key
+      secretKey: BRANCH_CAREGIVER_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-checker-credentials
+        property: key
+      secretKey: CHECKR_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-checker-credentials
+        property: url
+      secretKey: CHECKR_URL
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-pre-config
+        property: jobs_sns_topic_arn
+      secretKey: JOBS_SNS_TOPIC_ARN
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-pre-config
+        property: jobs_sqs_queue_url
+      secretKey: JOBS_SQS_QUEUE_URL
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-pre-config
+        property: change_log_sns_topic_arn
+      secretKey: CHANGE_LOG_SNS_TOPIC_ARN
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-pre-config
+        property: change_log_sqs_queue_url
+      secretKey: CHANGE_LOG_SQS_QUEUE_URL
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: user_documents_s3_bucket
+      secretKey: USER_DOCUMENTS_BUCKET_NAME
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: legal_s3_bucket
+      secretKey: LEGAL_DOCUMENTS_BUCKET_NAME
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: internal_api_allowed_token_domains
+      secretKey: INTERNAL_API_ALLOWED_TOKEN_DOMAINS
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: internal_api_allowed_audiences
+      secretKey: INTERNAL_API_ALLOWED_AUDIENCES
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: video_profile_s3_bucket
+      secretKey: VIDEO_PROFILES_BUCKET_NAME
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-pre-config
+        property: public_api_endpoint
+      secretKey: PUBLIC_API_ENDPOINT
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-pre-config
+        property: assets_api_allowed_origins
+      secretKey: ASSETS_API_ALLOWED_ORIGINS
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-gmaps-credentials
+        property: api_key
+      secretKey: GOOGLE_MAPS_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-getstream-credentials
+        property: key
+      secretKey: GET_STREAM_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-getstream-credentials
+        property: secret
+      secretKey: GET_STREAM_SECRET
+    enabled: true
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: cluster-external-secrets
+  postgres-backend-credentials:
+    data:
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: host
+      secretKey: host
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: port
+      secretKey: port
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: username
+      secretKey: username
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: password
+      secretKey: password
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: dbname
+      secretKey: dbname
+    enabled: true
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: cluster-external-secrets
+    target:
+      template:
+        data:
+          BACKEND_POSTGRES_URL: postgresql://{{ .username }}:{{ .password }}@{{ .host
+            }}:{{ .port }}/pre_backend
+ingress:
+  api:
+    annotations:
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:184419373168:certificate/43c486b6-b87a-4aa0-9b01-267d1fc86541
+      alb.ingress.kubernetes.io/group.name: public
+      alb.ingress.kubernetes.io/healthcheck-path: /_livez
+      alb.ingress.kubernetes.io/ip-address-type: ipv4
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/ssl-redirect: "443"
+      alb.ingress.kubernetes.io/target-type: ip
+    defaultBackend:
+      enabled: false
+    enabled: true
+    hostname: pre-api.herewith.eu
+    ingressClassName: nginx
+    paths:
+      api:
+        backend:
+          serviceName: default
+          servicePort: 8080
+        path: /assets/
+        pathType: Prefix
+labels:
+  quoori.com/environment: staging
+  quoori.com/team: backend
+monitoring:
+  prometheus:
+    serviceMonitor:
+      enabled: false
+pod:
+  annotations:
+    prometheus.io/port: "9090"
+    prometheus.io/scrape: "true"
+  container:
+    args:
+    - assets-api
+    envFrom:
+      assets-api-v-latest-credentials:
+        name: assets-api-v-latest-credentials
+        type: secretRef
+      assets-api-v-latest-postgres-backend-credentials:
+        name: assets-api-v-latest-postgres-backend-credentials
+        type: secretRef
+      config-all-v-latest:
+        name: config-all-v-latest
+        type: configMapRef
+    image:
+      registry: 184419373168.dkr.ecr.eu-central-1.amazonaws.com
+      repository: quoori-backend-assets-api
+      tag: a512a27
+    livenessProbe:
+      httpGet:
+        path: /_livez
+        port: 9090
+    readinessProbe:
+      httpGet:
+        path: /_livez
+        port: 9090
+    resources:
+      limits:
+        cpu: 400m
+        memory: 512Mi
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::184419373168:role/eks-quoori-backend-assets-api
+  imagePullSecrets: {}
+services:
+  default:
+    annotations: {}
+    enabled: true
+    labels: {}
+    ports:
+      default:
+        namePrefix: http
+        port: 8080
+        targetPort: 8080

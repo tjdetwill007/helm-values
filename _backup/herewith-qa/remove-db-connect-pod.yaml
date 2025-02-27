@@ -1,0 +1,27 @@
+cronJob:
+  enabled: true
+  job:
+    ttlSecondsAfterFinished: 30
+  schedule: 0 * * * *
+deployment:
+  enabled: false
+monitoring:
+  prometheus:
+    serviceMonitor:
+      enabled: false
+pod:
+  container:
+    commands:
+    - /bin/sh
+    - -c
+    - kubectl delete po $POD_TO_DELETE -n $NS || echo "$POD_TO_DELETE doesn't exist"
+    env:
+      NS: backend
+      POD_TO_DELETE: tcp-proxy-pod
+    image:
+      registry: docker.io
+      repository: bitnami/kubectl
+      tag: latest
+  restartPolicy: Never
+serviceAccount:
+  imagePullSecrets: {}

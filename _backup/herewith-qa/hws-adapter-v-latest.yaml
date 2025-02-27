@@ -1,0 +1,102 @@
+configmaps:
+  hws-adapter-v-latest-config:
+    data:
+      ENV_NAME: staging
+      LISTEN_API: :8080
+      LISTEN_METRICS: :9090
+      PUBLIC_API_ENDPOINT: https://qahws-api.herewith.eu
+    enabled: true
+deployment:
+  replicas:
+    default: 1
+deploymet:
+  enabled: true
+externalSecrets:
+  credentials:
+    data:
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hws-adapter-config
+        property: homework_api_endpoint
+      secretKey: HOMEWORK_API_ENDPOINT
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hws-adapter-config
+        property: homework_api_token
+      secretKey: HOMEWORK_API_TOKEN
+    enabled: true
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: cluster-external-secrets
+    target:
+      template:
+        data:
+          BACKEND_PUBLIC_API_ENDPOINT: https://qa-api.herewith.eu/v-latest/hws
+          BACKEND_PUBLIC_API_ENDPOINT_V2: https://qa-api.herewith.eu/v-latest/
+          CORS_ALLOWED_ORIGINS: https://qa.herewith.eu,https://qa-api.herewith.eu,https://web.quoori.eu,http://localhost:3000/,http://localhost:3000,https://app.herewith.eu
+          JOBS_SNS_TOPIC_ARN: arn:aws:sns:eu-central-1:184419373168:quoori-qa-backend-jobs
+          PUBLIC_API_ENDPOINT: https://qahws-api.herewith.eu
+ingress:
+  api:
+    annotations:
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:184419373168:certificate/43c486b6-b87a-4aa0-9b01-267d1fc86541
+      alb.ingress.kubernetes.io/group.name: public
+      alb.ingress.kubernetes.io/healthcheck-path: /_livez
+      alb.ingress.kubernetes.io/ip-address-type: ipv4
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/ssl-redirect: "443"
+      alb.ingress.kubernetes.io/target-type: ip
+    defaultBackend:
+      enabled: false
+    enabled: true
+    hostname: qahws-api.herewith.eu
+    ingressClassName: nginx
+    paths:
+      api:
+        backend:
+          serviceName: default
+          servicePort: 8080
+        path: /api/
+        pathType: Prefix
+labels:
+  quoori.com/environment: staging
+  quoori.com/team: backend
+monitoring:
+  prometheus:
+    serviceMonitor:
+      enabled: false
+pod:
+  annotations:
+    prometheus.io/port: "9090"
+    prometheus.io/scrape: "true"
+  container:
+    envFrom:
+      hws-adapter-v-latest-config:
+        name: hws-adapter-v-latest-config
+        type: configMapRef
+      hws-adapter-v-latest-credentials:
+        name: hws-adapter-v-latest-credentials
+        type: secretRef
+    image:
+      registry: 184419373168.dkr.ecr.eu-central-1.amazonaws.com
+      repository: quoori-backend-hws-adapter
+      tag: 9429a0f
+    livenessProbe:
+      httpGet:
+        path: /_livez
+        port: 9090
+      initialDelaySeconds: 10
+      periodSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /_livez
+        port: 9090
+      initialDelaySeconds: 10
+      periodSeconds: 10
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::184419373168:role/eks-quoori-backend-hws-adapter
+  imagePullSecrets: {}

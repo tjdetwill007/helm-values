@@ -1,0 +1,175 @@
+configmaps:
+  hasura-config-v-latest:
+    data:
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
+      HASURA_GRAPHQL_ENABLE_TELEMETRY: "false"
+      HASURA_GRAPHQL_ENABLED_APIS: metadata,graphql,config
+    enabled: true
+deployment:
+  enabled: true
+  replicas:
+    default: 1
+externalSecrets:
+  credentials:
+    data:
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hasura-credentials
+        property: admin_key
+      secretKey: HASURA_GRAPHQL_ADMIN_SECRET
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hasura-credentials
+        property: api_host
+      secretKey: HASURA_GRAPHQL_ENDPOINT
+    enabled: true
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: cluster-external-secrets
+  postgres-backend-credentials:
+    data:
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: host
+      secretKey: host
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: port
+      secretKey: port
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: username
+      secretKey: username
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: password
+      secretKey: password
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: dbname
+      secretKey: dbname
+    enabled: true
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: cluster-external-secrets
+    target:
+      template:
+        data:
+          HASURA_GRAPHQL_DATABASE_URL: postgresql://{{ .username }}:{{ .password }}@{{
+            .host }}:{{ .port }}/qa_backend
+  postgres-changelog-credentials:
+    data:
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: host
+      secretKey: host
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: port
+      secretKey: port
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: username
+      secretKey: username
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: password
+      secretKey: password
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: dbname
+      secretKey: dbname
+    enabled: true
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: cluster-external-secrets
+    target:
+      template:
+        data:
+          CHANGE_LOG_POSTGRES_URL: postgresql://{{ .username }}:{{ .password }}@{{
+            .host }}:{{ .port }}/qa_changelog
+labels:
+  quoori.com/environment: staging
+  quoori.com/team: backend
+monitoring:
+  prometheus:
+    serviceMonitor:
+      enabled: false
+pod:
+  container:
+    envFrom:
+      config-all-v-latest:
+        name: config-all-v-latest
+        type: configMapRef
+      hasura-config-v-latest:
+        name: hasura-config-v-latest
+        type: configMapRef
+      hasura-v-latest-credentials:
+        name: hasura-v-latest-credentials
+        type: secretRef
+      hasura-v-latest-postgres-backend-credentials:
+        name: hasura-v-latest-postgres-backend-credentials
+        type: secretRef
+      hasura-v-latest-postgres-changelog-credentials:
+        name: hasura-v-latest-postgres-changelog-credentials
+        type: secretRef
+    image:
+      registry: 184419373168.dkr.ecr.eu-central-1.amazonaws.com
+      repository: quoori-backend-hasura
+      tag: a2e0479
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /v1/version
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 10
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+      requests:
+        cpu: 200m
+        memory: 1Gi
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::184419373168:role/eks-quoori-backend-hasura
+  imagePullSecrets: {}
+services:
+  default:
+    annotations: {}
+    enabled: true
+    labels: {}
+    ports:
+      default:
+        namePrefix: http
+        port: 8080
+        targetPort: 8080

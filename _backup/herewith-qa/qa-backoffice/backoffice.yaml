@@ -1,0 +1,95 @@
+configmaps:
+  backoffice-config:
+    data:
+      REACT_APP_ASSET_BASE_URL: https://qa-api.herewith.eu/assets
+      REACT_APP_BACKOFFICE_API_URL: https://qainternal-api.herewith.eu/api
+      REACT_APP_ENV_NAME: staging
+      REACT_APP_WEBAPP_BASE_URL: https://qa.herewith.eu
+    enabled: true
+deployment:
+  replicas:
+    default: 1
+deploymet:
+  enabled: true
+externalSecrets:
+  credentials:
+    data:
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backoffice-config
+        property: google_oidc_client_id
+      secretKey: REACT_APP_GOOGLE_OIDC_CLIENT_ID
+    enabled: true
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: cluster-external-secrets
+ingress:
+  api:
+    annotations:
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:184419373168:certificate/43c486b6-b87a-4aa0-9b01-267d1fc86541
+      alb.ingress.kubernetes.io/group.name: public
+      alb.ingress.kubernetes.io/healthcheck-path: /_livez
+      alb.ingress.kubernetes.io/ip-address-type: ipv4
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/ssl-redirect: "443"
+      alb.ingress.kubernetes.io/target-type: ip
+    defaultBackend:
+      enabled: false
+    enabled: true
+    hostname: qa-backoffice.herewith.eu
+    ingressClassName: nginx
+    paths:
+      api:
+        backend:
+          serviceName: default
+          servicePort: 80
+        path: /
+        pathType: Prefix
+labels:
+  quoori.com/environment: staging
+  quoori.com/team: backoffice
+monitoring:
+  prometheus:
+    serviceMonitor:
+      enabled: false
+pod:
+  container:
+    envFrom:
+      backoffice-config:
+        name: backoffice-config
+        type: configMapRef
+      backoffice-credentials:
+        name: backoffice-credentials
+        type: secretRef
+    image:
+      registry: 184419373168.dkr.ecr.eu-central-1.amazonaws.com
+      repository: quoori-backoffice-backoffice
+      tag: d0e89cd
+    livenessProbe:
+      httpGet:
+        path: /_livez
+        port: 80
+      initialDelaySeconds: 10
+      periodSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /_livez
+        port: 80
+      initialDelaySeconds: 10
+      periodSeconds: 10
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::184419373168:role/eks-quoori-backoffice-backoffice
+  imagePullSecrets: {}
+services:
+  default:
+    annotations: {}
+    enabled: true
+    labels: {}
+    ports:
+      default:
+        namePrefix: http
+        port: 80
+        targetPort: 80

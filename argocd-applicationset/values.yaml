@@ -25,18 +25,6 @@ applicationSets:
     destination: 
       server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"
       namespace: "dev-backend"
-  - name: "qa-appset"
-    project: "herewith-qa"
-    applicationNamespace: "herewith-qa-ns"
-    destination: 
-      server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"
-      namespace: "qa-backend"
-  - name: "pre-prod-appset"
-    project: "herewith-pre-prod"
-    applicationNamespace: "herewith-pre-prod-ns"
-    destination: 
-      server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"
-      namespace: "pre-prod-backend"
   - name: "production-appset"
     project: "herewith-production"
     applicationNamespace: "herewith-production-ns"
@@ -48,6 +36,4 @@ applicationSets:
 projects:
   - name: "herewith-staging"
   - name: "herewith-dev"
-  - name: "herewith-qa"
-  - name: "herewith-pre-prod"
   - name: "herewith-production"

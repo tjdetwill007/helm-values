@@ -11,27 +11,48 @@ defaultSettings:
   destination:
     server: "https://kubernetes.default.svc"
 
+
 # Here each applicationset is environment based deployment manager i.e, they will deploy every microservices of their respective environment like, public api, assets api, internal api etc. 
+# use mapNamespaces, which is the list of appName and namespace if you want to deploy any specific app to a specific namespace. The template will automatically create a configuration for that app. Ex - 
+# destination:
+#   mapNamespaces:
+#     - appName: "internal-api-v6" ## Remember this name should be same as of the folder structure of argocd-applicationset-values.
+#       namespace: "dev-internal-api"
+
 applicationSets:
   - name: "staging-appset"
     project: "herewith-staging"
     applicationNamespace: "herewith-staging-ns"
     destination: 
       server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"
-      namespace: "backend"
+      defaultNamespace: "backend"
+      mapNamespaces:
+        - appName: "common"
+          namespace: "dev-common"
+        - appName: "internal-api"
+          namespace: "dev-internal-api" 
+
   - name: "dev-appset"
     project: "herewith-dev"
     applicationNamespace: "herewith-dev-ns"
     destination: 
       server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"
-      namespace: "dev-backend"
+      defaultNamespace: "dev-backend"
+      mapNamespaces:
+        - appName: "docs"
+          namespace: "dev-docs"
+
   - name: "production-appset"
     project: "herewith-production"
     applicationNamespace: "herewith-production-ns"
-    destination: 
+    destination:
       server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"
-      namespace: "prod-backend"
-
+      defaultNamespace: "prod-backend"
+      mapNamespaces:
+        - appName: "webapp"
+          namespace: "prod-webapp"
+        - appName: "website"
+          namespace: "prod-website"
 # Here we are referencing projects as envrionments and the same are referenced to the applicationset.
 projects:
   - name: "herewith-staging"

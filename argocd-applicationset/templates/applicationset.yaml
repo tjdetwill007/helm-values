@@ -38,6 +38,24 @@ spec:
           ref: values
       destination:
         server: {{ include "applicationset.destinationServer" (dict "destination" .destination "root" $) }}
-        namespace: {{ .destination.namespace }}
+
+  {{- if .destination.mapNamespaces }}
+  {{- $mapNamespaces := .destination.mapNamespaces }}
+  templatePatch: |
+    spec:
+      destination: 
+        namespace: |-
+          {{`{{ $appName := .path.basename }}`}}
+          {{`{{ $namespace :=`}} "{{ .destination.defaultNamespace }}" {{`}}`}}
+          {{`{{ $namespaceMap := (list`}}{{- range $mapNamespaces }}{{` (dict "appName" "`}}{{ .appName }}{{`" "namespace" "`}}{{ .namespace }}{{`")`}}{{- end }}{{`) }}`}}
+          {{`{{- range $namespaceMap }}`}}
+            {{`{{- if eq .appName $appName }}`}}
+              {{`{{- $namespace = .namespace }}`}}
+            {{`{{- end }}`}}
+          {{`{{- end }}`}}
+          {{`{{- $namespace }}`}}
+
+  {{- end }}
+
 {{- end }}
 {{- end }}

@@ -37,3 +37,6 @@ projects:
   - name: "herewith-staging"
   - name: "herewith-dev"
   - name: "herewith-production"
+
+
+# Note: If you want to delete both applicationset and project associated with it, then first only delete applicationset so that applications from remote cluster can be deleted without any issue. Then delete the project and upgrade the helm again. Deleting both at a time will lead to delete loop.

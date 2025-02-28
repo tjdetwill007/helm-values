@@ -39,8 +39,8 @@ applicationSets:
       server: "https://6B2FDC16BD92F6ADEECB36735FC75CAE.gr7.eu-central-1.eks.amazonaws.com"
       defaultNamespace: "dev-backend"
       mapNamespaces:
-        - appName: "docs"
-          namespace: "dev-docs"
+        - appName: "webapp"
+          namespace: "dev-webapp"
 
   - name: "production-appset"
     project: "herewith-production"
@@ -53,7 +53,7 @@ applicationSets:
           namespace: "prod-webapp"
         - appName: "website"
           namespace: "prod-website"
-          
+
 # Here we are referencing projects as envrionments and the same are referenced to the applicationset.
 projects:
   - name: "herewith-staging"

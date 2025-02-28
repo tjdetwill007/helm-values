@@ -1,0 +1,242 @@
+configmaps:
+  webapp-config:
+    data:
+      PORT: "8080"
+      ENV_NAME: dev
+    enabled: true
+deployment:
+  enabled: true
+  replicas:
+    default: 2
+pod:
+  annotations:
+    quoori.com/environment: dev
+    quoori.com/team: web
+  container:
+    name: "nextjs-dev"
+    envFrom:
+      webapp-config:
+        name: webapp-config
+        type: configMapRef
+      webapp-credentials:
+        name: webapp-credentials
+        type: secretRef
+    image:
+      registry: 184419373168.dkr.ecr.eu-central-1.amazonaws.com
+      repository: quoori-web-webapp
+      tag: latest
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    resources:
+      requests:
+        cpu: 256m
+        memory: 128Mi
+      limits:
+        cpu: '1'
+        memory: 512Mi
+ingress:
+  api:
+    annotations:
+      alb.ingress.kubernetes.io/load-balancer-name: "staging-test-alb"
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:184419373168:certificate/43c486b6-b87a-4aa0-9b01-267d1fc86541
+      alb.ingress.kubernetes.io/group.name: public
+      alb.ingress.kubernetes.io/healthcheck-path: /_livez
+      alb.ingress.kubernetes.io/ip-address-type: ipv4
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/ssl-redirect: "443"
+      alb.ingress.kubernetes.io/target-type: ip
+    defaultBackend:
+      enabled: false
+    enabled: true
+    hostname: dev.herewith.eu
+    ingressClassName: alb
+    paths:
+      api:
+        backend:
+          serviceName: default
+          servicePort: 80
+        path: /
+        pathType: Prefix
+labels:
+  quoori.com/environment: dev
+  quoori.com/team: web
+monitoring:
+  prometheus:
+    serviceMonitor:
+      enabled: false
+
+externalSecrets:
+  credentials:
+    data:
+    - secretKey: NEXT_PUBLIC_API_DISPUTE
+      remoteRef:
+          key: dev-webapp-config
+          property: next_public_api_dispute
+    - secretKey: NEXT_PUBLIC_PATHURL
+      remoteRef:
+          key: dev-webapp-config
+          property: next_public_pathurl
+    - secretKey: NEXT_PUBLIC_IMAGEDOMAIN
+      remoteRef:
+          key: dev-webapp-config
+          property: next_public_imagedomain
+    - secretKey: NEXT_PUBLIC_UTM_CLIENT_ID
+      remoteRef:
+          key: webapp-config
+          property: next_public_utm_client_id
+    - secretKey: NEXT_PUBLIC_UTM_CLIENT_SECRET
+      remoteRef:
+          key: webapp-config
+          property: next_public_utm_client_secret
+    - secretKey: REACT_APP_GOOGLE_MAPS_API_KEY
+      remoteRef:
+          key: webapp-config
+          property: react_app_google_maps_api_key
+    - secretKey: NEXT_PUBLIC_UTM_PARAM_API_URL
+      remoteRef:
+          key: webapp-config
+          property: next_public_utm_param_api_url
+    - secretKey: NEXT_PUBLIC_GET_STREAM_KEY
+      remoteRef:
+          key: webapp-config
+          property: next_public_get_stream_key
+    - secretKey: NEXT_PUBLIC_GET_STREAM_SECRET_KEY
+      remoteRef:
+          key: webapp-config
+          property: next_public_get_stream_secret_key
+    - secretKey: NEXT_PUBLIC_HOST
+      remoteRef:
+          key: dev-webapp-config
+          property: public_host
+    - secretKey: NEXT_PUBLIC_API_URL
+      remoteRef:
+          key: dev-webapp-config
+          property: public_api_url
+    - secretKey: NEXT_PUBLIC_PAYMENT_API_URL
+      remoteRef:
+          key: dev-webapp-config
+          property: public_payment_api_url
+    - secretKey: NEXT_PUBLIC_HWS_API_URL
+      remoteRef:
+          key: dev-webapp-config
+          property: public_hws_api_url
+    - secretKey: NEXT_PUBLIC_API_HOST
+      remoteRef:
+          key: dev-webapp-config
+          property: public_proxy_api_url
+    - secretKey: NEXT_PUBLIC_SEGMENT_FAMILY
+      remoteRef:
+          key: webapp-config
+          property: segment_key_family
+    - secretKey: NEXT_PUBLIC_SEGMENT_PRO
+      remoteRef:
+          key: webapp-config
+          property: segment_key_pro
+    - secretKey: NEXT_PUBLIC_SENTRY_DSN
+      remoteRef:
+          key: webapp-config
+          property: sentry_dsn
+    - secretKey: SECURE_COOKIE_ENVIRONMENT
+      remoteRef:
+          key: webapp-config
+          property: secure_cookie_environment
+    - secretKey: COOKIE_SECRET_CURRENT
+      remoteRef:
+          key: webapp-config
+          property: cookie_secret_current
+    - secretKey: COOKIE_SECRET_PREVIOUS
+      remoteRef:
+          key: webapp-config
+          property: cookie_secret_previous
+    - secretKey: SENTRY_AUTH_TOKEN
+      remoteRef:
+          key: webapp-config
+          property: sentry_auth_token
+
+    - secretKey: NEXT_PUBLIC_INTERCOM_FAMILY_ID
+      remoteRef:
+          key: webapp-intercom-config
+          property: family_key
+    - secretKey: NEXT_PUBLIC_INTERCOM_PRO_ID
+      remoteRef:
+          key: webapp-intercom-config
+          property: pro_key
+
+    - secretKey: GOOGLE_PLATFORM_API_KEY
+      remoteRef:
+          key: webapp-google-platform-credentials
+          property: api_key
+
+    - secretKey: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+      remoteRef:
+          key: backend-firebase-family-credentials
+          property: project_id
+    - secretKey: FIREBASE_CLIENT_EMAIL
+      remoteRef:
+          key: backend-firebase-family-credentials
+          property: client_email
+
+    - secretKey: FIREBASE_PRIVATE_KEY
+      remoteRef:
+          key: webapp-firebase-credentials
+          property: dumb_nextjs_kind_of_private_key
+    - secretKey: NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY
+      remoteRef:
+          key: webapp-firebase-credentials
+          property: public_api_key
+    - secretKey: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+      remoteRef:
+          key: webapp-firebase-credentials
+          property: dev_auth_domain
+    - secretKey: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+      remoteRef:
+          key: webapp-firebase-credentials
+          property: storage_bucket
+    - secretKey: NEXT_PUBLIC_FIREBASE_SENDER_ID
+      remoteRef:
+          key: webapp-firebase-credentials
+          property: sender_id
+    - secretKey: NEXT_PUBLIC_FIREBASE_APP_ID
+      remoteRef:
+          key: webapp-firebase-credentials
+          property: app_id
+    - secretKey: NEXT_PUBLIC_FIREBASE_ALLOWED_HOST
+      remoteRef:
+          key: webapp-firebase-credentials
+          property: dev_allowed_host
+    - secretKey: NEXT_PUBLIC_BRANCH_IO_FAMILY
+      remoteRef:
+          key: webapp-branch-io-config
+          property: dev_family
+    - secretKey: NEXT_PUBLIC_BRANCH_IO_PRO
+      remoteRef:
+          key: webapp-branch-io-config
+          property: dev_pro
+    - secretKey: NEXT_PUBLIC_AMPLITUDE_API_KEY
+      remoteRef:
+          key: webapp-amplitude-credentials
+          property: dev_amplitude_key
+    - secretKey: NEXT_PUBLIC_DASHBOARD_KEY
+      remoteRef:
+          key: webapp-amplitude-credentials
+          property: dev_amplitude_dashboard_key
+    enabled: true
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: cluster-external-secrets
+services:
+  default:
+    annotations: {}
+    enabled: true
+    labels: {}
+    ports:
+      default:
+        namePrefix: http
+        port: 80
+        targetPort: 8080
+      

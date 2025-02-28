@@ -1,3 +1,4 @@
+#  This will create the namespaces where the argocd application will be created on the platform account. This has no relation with destination cluster where the actual helm apps will be deployed.
 {{- range .Values.applicationSets }}
 ---
 apiVersion: v1

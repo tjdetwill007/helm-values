@@ -53,6 +53,7 @@ applicationSets:
           namespace: "prod-webapp"
         - appName: "website"
           namespace: "prod-website"
+          
 # Here we are referencing projects as envrionments and the same are referenced to the applicationset.
 projects:
   - name: "herewith-staging"

@@ -44,16 +44,7 @@ spec:
   templatePatch: |
     spec:
       destination: 
-        namespace: |-
-          {{`{{ $appName := .path.basename }}`}}
-          {{`{{ $namespace :=`}} "{{ .destination.defaultNamespace }}" {{`}}`}}
-          {{`{{ $namespaceMap := (list`}}{{- range $mapNamespaces }}{{` (dict "appName" "`}}{{ .appName }}{{`" "namespace" "`}}{{ .namespace }}{{`")`}}{{- end }}{{`) }}`}}
-          {{`{{- range $namespaceMap }}`}}
-            {{`{{- if eq .appName $appName }}`}}
-              {{`{{- $namespace = .namespace }}`}}
-            {{`{{- end }}`}}
-          {{`{{- end }}`}}
-          {{`{{- $namespace }}`}}
+        namespace: {{`{{ $appName := .path.basename }}`}}{{`{{ $namespace :=`}} "{{ .destination.defaultNamespace }}" {{`}}`}}{{`{{ $namespaceMap := (list`}}{{- range $mapNamespaces }}{{` (dict "appName" "`}}{{ .appName }}{{`" "namespace" "`}}{{ .namespace }}{{`")`}}{{- end }}{{`) }}`}}{{`{{- range $namespaceMap }}`}}{{`{{- if eq .appName $appName }}`}}{{`{{- $namespace = .namespace }}`}}{{`{{- end }}`}}{{`{{- end }}`}}{{`{{- $namespace }}`}}
 
   {{- end }}
 

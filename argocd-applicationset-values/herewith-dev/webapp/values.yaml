@@ -13,7 +13,6 @@ pod:
     quoori.com/environment: dev
     quoori.com/team: web
   container:
-    name: "nextjs-dev"
     envFrom:
       webapp-config:
         name: webapp-config

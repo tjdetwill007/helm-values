@@ -24,7 +24,7 @@ pod:
     image:
       registry: 184419373168.dkr.ecr.eu-central-1.amazonaws.com
       repository: quoori-web-webapp
-      tag: 7153381
+      tag: "7153381"
     livenessProbe:
       httpGet:
         path: /

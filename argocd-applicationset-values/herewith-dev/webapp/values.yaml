@@ -52,7 +52,7 @@ ingress:
     defaultBackend:
       enabled: false
     enabled: true
-    hostname: dev.herewith.eu
+    hostname: testwebapp.herewith.eu
     ingressClassName: alb
     paths:
       api:

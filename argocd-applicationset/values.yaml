@@ -13,7 +13,7 @@ defaultSettings:
 
 
 # Here each applicationset is environment based deployment manager i.e, they will deploy every microservices of their respective environment like, public api, assets api, internal api etc. 
-# use mapNamespaces, which is the list of appName and namespace if you want to deploy any specific app to a specific namespace. The template will automatically create a configuration for that app. Ex - 
+# use mapNamespaces, which is the list of appName and namespace if you want to deploy any specific app to a specific namespace. The template will automatically create a configuration for that app. Example - 
 # destination:
 #   mapNamespaces:
 #     - appName: "internal-api-v6" ## Remember this name should be same as of the folder structure of argocd-applicationset-values.

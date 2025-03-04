@@ -40,7 +40,7 @@ applicationSets:
       defaultNamespace: "dev-backend"
       mapNamespaces:
         - appName: "webapp"
-          namespace: "dev-webapp"
+          namespace: "dev-web"
 
   - name: "production-appset"
     project: "herewith-production"

@@ -1,0 +1,367 @@
+deployment:
+  enabled: true
+  replicas:
+    default: 1
+externalSecrets:
+  credentials:
+    data:
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-firebase-family-credentials
+      secretKey: FIREBASE_CREDENTIALS
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-twilio-credentials
+        property: account_sid
+      secretKey: TWILIO_USERNAME
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-twilio-credentials
+        property: auth_token
+      secretKey: TWILIO_PASSWORD
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-twilio-credentials
+        property: sms_sender_number
+      secretKey: TWILIO_SENDER_NUMBER
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-twilio-credentials
+        property: sms_sender_name
+      secretKey: TWILIO_SENDER_NAME
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-getstream-credentials
+        property: key
+      secretKey: GET_STREAM_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-getstream-credentials
+        property: secret
+      secretKey: GET_STREAM_SECRET
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-dev-branch-credentials
+        property: key
+      secretKey: BRANCH_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-dev-branch-caregiver-credentials
+        property: key
+      secretKey: BRANCH_CAREGIVER_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-checker-credentials
+        property: key
+      secretKey: CHECKR_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-checker-credentials
+        property: url
+      secretKey: CHECKR_URL
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-dev-config
+        property: jobs_sns_topic_arn
+      secretKey: JOBS_SNS_TOPIC_ARN
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-dev-config
+        property: jobs_sqs_queue_url
+      secretKey: JOBS_SQS_QUEUE_URL
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-dev-config
+        property: change_log_sns_topic_arn
+      secretKey: CHANGE_LOG_SNS_TOPIC_ARN
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-dev-config
+        property: change_log_sqs_queue_url
+      secretKey: CHANGE_LOG_SQS_QUEUE_URL
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: user_documents_s3_bucket
+      secretKey: USER_DOCUMENTS_BUCKET_NAME
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: legal_s3_bucket
+      secretKey: LEGAL_DOCUMENTS_BUCKET_NAME
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-config
+        property: video_profile_s3_bucket
+      secretKey: VIDEO_PROFILES_BUCKET_NAME
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-dev-config
+        property: video_profile_sqs_queue_url
+      secretKey: VIDEO_PROFILE_SQS_QUEUE_URL
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-dev-config
+        property: public_api_endpoint
+      secretKey: PUBLIC_API_ENDPOINT
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-gmaps-credentials
+        property: api_key
+      secretKey: GOOGLE_MAPS_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hws-adapter-config
+        property: homework_api_endpoint
+      secretKey: HOMEWORK_API_ENDPOINT
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hws-adapter-config
+        property: homework_client_type
+      secretKey: HOMEWORK_CLIENT_TYPE
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hws-adapter-config
+        property: homework_api_token
+      secretKey: HOMEWORK_API_TOKEN
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-insurance-gig-credentials
+        property: login_url
+      secretKey: INSURANCE_GIG_LOGIN_URL
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-insurance-gig-credentials
+        property: api_url
+      secretKey: INSURANCE_GIG_API_URL
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-insurance-gig-credentials
+        property: username
+      secretKey: INSURANCE_GIG_USERNAME
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-insurance-gig-credentials
+        property: password
+      secretKey: INSURANCE_GIG_PASSWORD
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-insurance-gig-credentials
+        property: referral_email
+      secretKey: INSURANCE_REFERRAL_EMAIL
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hubspot-credentials
+        property: api_url
+      secretKey: HUBSPOT_API_URL
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-hubspot-credentials
+        property: private_api_token
+      secretKey: HUBSPOT_PRIVATE_API_TOKEN
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-dev-stripe-credentials
+        property: api_key
+      secretKey: STRIPE_API_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-dev-stripe-credentials
+        property: publishable_key
+      secretKey: STRIPE_PUBLISHABLE_KEY
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-dev-stripe-credentials
+        property: webhook_secret
+      secretKey: STRIPE_WEBHOOK_SECRET
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-utils
+        property: support_email
+      secretKey: SUPPORT_EMAIL
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: backend-greenhouse-credentials
+        property: harvest_key
+      secretKey: GREEN_HOUSE_KEY
+    enabled: true
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: cluster-external-secrets
+  postgres-backend-credentials:
+    data:
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: host
+      secretKey: host
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: port
+      secretKey: port
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: username
+      secretKey: username
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: password
+      secretKey: password
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-backend-credentials
+        property: dbname
+      secretKey: dbname
+    enabled: true
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: cluster-external-secrets
+    target:
+      template:
+        data:
+          BACKEND_POSTGRES_URL: postgresql://{{ .username }}:{{ .password }}@{{ .host }}:{{ .port }}/dev_backend
+  postgres-changelog-credentials:
+    data:
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: host
+      secretKey: host
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: port
+      secretKey: port
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: username
+      secretKey: username
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: password
+      secretKey: password
+    - remoteRef:
+        conversionStrategy: Default
+        decodingStrategy: None
+        key: postgres-changelog-credentials
+        property: dbname
+      secretKey: dbname
+    enabled: true
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: cluster-external-secrets
+    target:
+      template:
+        data:
+          CHANGE_LOG_POSTGRES_URL: postgresql://{{ .username }}:{{ .password }}@{{ .host }}:{{ .port }}/dev_changelog
+labels:
+  quoori.com/environment: staging
+  quoori.com/team: backend
+monitoring:
+  prometheus:
+    serviceMonitor:
+      enabled: false
+pod:
+  annotations:
+    kubernetes.io/psp: eks.privileged
+    prometheus.io/port: "9090"
+    prometheus.io/scrape: "true"
+  container:
+    args:
+    - cron
+    envFrom:
+      config-all-v-latest:
+        name: config-all-v-latest
+        type: configMapRef
+      cron-v-latest-credentials:
+        name: cron-v-latest-credentials
+        type: secretRef
+      cron-v-latest-postgres-backend-credentials:
+        name: cron-v-latest-postgres-backend-credentials
+        type: secretRef
+      cron-v-latest-postgres-changelog-credentials:
+        name: cron-v-latest-postgres-changelog-credentials
+        type: secretRef
+    image:
+      registry: 184419373168.dkr.ecr.eu-central-1.amazonaws.com
+      repository: quoori-backend-cron
+      tag: a2e0479
+    livenessProbe:
+      httpGet:
+        path: /_livez
+        port: 9090
+    readinessProbe:
+      httpGet:
+        path: /_livez
+        port: 9090
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::184419373168:role/eks-quoori-backend-cron
+  imagePullSecrets: {}
+services:
+  default:
+    annotations: {}
+    enabled: true
+    labels: {}
+    ports:
+      default:
+        namePrefix: http
+        port: 80
+        targetPort: 8080

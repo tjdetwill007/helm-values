@@ -307,7 +307,7 @@ externalSecrets:
     - remoteRef:
         conversionStrategy: Default
         decodingStrategy: None
-        key: backend-dev--credentials
+        key: backend-dev-credentials
         property: publishable_key
       secretKey: STRIPE_PUBLISHABLE_KEY
     - remoteRef:

@@ -18,14 +18,6 @@
 {{- end -}}
 {{- end -}}
 
-{{- define "applicationset.configFile" -}}
-{{- if .git -}}
-    {{- .git.configFile | default .root.Values.defaultGit.configFile | default "apps-config.yaml" -}}
-{{- else -}}
-    {{- .root.Values.defaultGit.configFile | default "apps-config.yaml" -}}
-{{- end -}}
-{{- end -}}
-
 {{- define "applicationset.destinationServer" -}}
 {{- if .destination -}}
     {{- .destination.server | default .root.Values.defaultSettings.destination.server | default "https://kubernetes.default.svc" -}}

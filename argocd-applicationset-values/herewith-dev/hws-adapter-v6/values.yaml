@@ -83,7 +83,7 @@ pod:
     image:
       registry: 184419373168.dkr.ecr.eu-central-1.amazonaws.com
       repository: quoori-backend-hws-adapter
-      tag: 154ec83
+      tag: eb7c091
     livenessProbe:
       httpGet:
         path: /_livez
